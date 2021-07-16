@@ -1,9 +1,16 @@
+import time
+import random
 import pyfiglet
 import click
 import elpyza_scripts
 
 
-@click.command()
+@click.group()
+def main():
+    pass
+
+
+@main.command(name="run")
 @click.argument("script", default="doctor")
 def run_elpyza(script):
     banner = pyfiglet.figlet_format(
@@ -18,12 +25,18 @@ def run_elpyza(script):
 
     selected_script = elpyza_scripts.load_script(script)
 
+    click.echo(selected_script.initial)
     while selected_script.active:
-        click.prompt(selected_script.user_promp)
+        user_input = click.prompt(selected_script.user_prompt)
+        response = selected_script.get_script_response(user_input)
+        click.echo(selected_script.script_prefix + response)
+        time.sleep(random.randint(0, 4))
 
-@click.command()
+
+@main.command(name="list")
 def list_scripts():
-    for script in 
+    click.echo("\n".join(elpyza_scripts.list_scripts()))
+
 
 if __name__ == "__main__":
-    run_elpyza()
+    main()
